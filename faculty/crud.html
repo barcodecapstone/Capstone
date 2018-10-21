@@ -1,0 +1,175 @@
+<html>
+<head>
+	<title>firebase crud</title>
+	
+<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+    authDomain: "barcoder-c2af4.firebaseapp.com",
+    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+    projectId: "barcoder-c2af4",
+    storageBucket: "barcoder-c2af4.appspot.com",
+    messagingSenderId: "88188653581"
+  };
+  firebase.initializeApp(config);
+</script>
+</head>
+<body>
+ <table>
+  <tr>
+   <td>Id: </td>
+   <td><input type="text" name="id" id="user_id" /></td>
+  </tr>
+  <tr>
+   <td>Registration No: </td>
+   <td><input type="text" name="user_name" id="user_name" /></td>
+  </tr>
+   <tr>
+   <td>Password: </td>
+   <td><input type="text" name="user_password" id="user_password" /></td>
+  </tr>
+  <tr>
+   <td>Data: </td>
+   <td><input type="text" name="user_data" id="user_data" /></td>
+  </tr>
+  <tr>
+   <td colspan="2">
+    <input type="button" value="Save" onclick="save_user();" />
+    <input type="button" value="Update" onclick="update_user();" />
+    <input type="button" value="Delete" onclick="delete_user();" />
+   </td>
+  </tr>
+ </table>
+ 
+ <h3>Users List</h3>
+ 
+ <table id="tbl_users_list" border="1">
+  <tr>
+   <td>#ID</td>
+   <td>RegNo</td>
+   <td>PASSWORD</td>
+   <td>DATA</td>
+  </tr>
+ </table>
+ <table>
+ 	<tr>
+ 		<th>RegNo: </th>
+   		<th><input type="text" name="username_login" id="username_login" /></th>
+ 	</tr>
+ 	<tr>
+ 		<th>Password: </th>
+   		<th><input type="text" name="userpassword_login" id="userpassword_login" /></th>
+ 	</tr>
+ 	<tr>
+ 		<td>
+ 			<input type="button" value="submit" onclick="login_user();">
+ 		</td>
+ 	</tr>
+ </table>
+ <script>
+ 
+  var tblUsers = document.getElementById('tbl_users_list');
+  var databaseRef = firebase.database().ref('facultyData/');
+  var rowIndex = 1;
+  
+  databaseRef.once('value', function(snapshot) 
+  {
+    snapshot.forEach(function(childSnapshot) 
+    {
+	   var childKey = childSnapshot.key;
+	   var childData = childSnapshot.val();
+	   
+	   var row = tblUsers.insertRow(rowIndex);
+	   var cellId = row.insertCell(0);
+	   var cellName = row.insertCell(1);
+	   var cellPwd = row.insertCell(2);
+	   var cellData = row.insertCell(3);
+	   cellId.appendChild(document.createTextNode(childKey));
+	   cellName.appendChild(document.createTextNode(childData.user_name));
+	   cellPwd.appendChild(document.createTextNode(childData.user_password));
+	   cellData.appendChild(document.createTextNode(childData.user_data));
+	   
+	   rowIndex = rowIndex + 1;
+    });
+  });
+   
+  function save_user(){
+   var user_name = document.getElementById('user_name').value;
+   var user_password = document.getElementById('user_password').value;
+   var user_data = document.getElementById('user_data').value;
+  
+   //var uid = firebase.database().ref().child('users').push().key;
+   var uid = document.getElementById('user_name').value;
+   var data = {
+    user_id: uid,
+    user_name: user_name,
+    user_password: user_password,
+    user_data: user_data
+   }
+   
+   var updates = {};
+   updates['/facultyData/' + uid] = data;
+   firebase.database().ref().update(updates);
+   
+   alert('The user is created successfully!');
+   reload_page();
+  }
+  
+  function update_user(){
+   var user_name = document.getElementById('user_name').value;
+   var user_id = document.getElementById('user_id').value;
+
+   var data = {
+    user_id: user_id,
+    user_name: user_name
+   }
+   
+   var updates = {};
+   updates['/facultyData/' + user_id] = data;
+   firebase.database().ref().update(updates);
+   
+   alert('The user is updated successfully!');
+   
+   reload_page();
+  }
+  
+  function delete_user(){
+   var user_id = document.getElementById('user_id').value;
+  
+   firebase.database().ref().child('/facultyData/' + user_id).remove();
+   alert('The user is deleted successfully!');
+   reload_page();
+  }
+  
+  function reload_page(){
+   window.location.reload();
+  }
+  
+
+  function login_user()
+  {
+  	var uname = document.getElementById('username_login').value;
+  	var upwd = document.getElementById('userpassword_login').value;
+  	var login_var=0;
+  	databaseRef.once('value', function(snapshot) 
+	  {
+	    snapshot.forEach(function(childSnapshot) 
+	    {
+		   var childKey = childSnapshot.key;
+		   var childData = childSnapshot.val();
+		   if(uname==childData.user_name&&upwd==childData.user_password)
+		   {
+		   	alert("success");
+		   	login_var=1;
+		   }
+		   
+	    });
+	  });
+  }
+
+ </script>
+ 
+</body>
+</html>

@@ -1,0 +1,403 @@
+
+<html>
+<head>
+	<script>
+		//USER DETAILS
+		window.onbeforeunload = function() {
+		  return "Data will be lost if you leave the page, are you sure?";
+		};
+		var current_faculty_id=sessionStorage.getItem("faculty_reg_no");  //to be fetched from sessions
+	</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+    <script type="text/javascript">
+    	var databaseRef = firebase.database().ref('Attendance/');   //Reference
+
+
+        function generateBarCode()
+        {	
+        	show_realtime_studentlist();
+        	document.getElementById("user_section").disabled=true;
+        	document.getElementById("class_time").disabled=true;
+        	document.getElementById("class_subject").disabled=true;
+        	document.getElementById("generate_button").disabled=true;
+
+        	
+        	
+        	//---------------TIMER SCRIPT---------------------------
+        	var t_date;
+			var d = new Date();
+
+			
+
+
+
+			t_date = d.getDate();
+			var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+			var t_month = months[d.getMonth()];
+			var t_year =d.getFullYear()
+			var t_hours=d.getHours();
+			var t_minutes=d.getMinutes()+10;
+			if(t_minutes>60)
+			{
+				t_minutes=59;
+			}
+			var t_seconds=d.getSeconds();
+			var tf_date=t_month+" "+t_date+", "+t_year+" "+t_hours+":"+t_minutes+":"+t_seconds;
+
+			var amPm;
+			var thour_12;
+
+
+			//checking if attendance is already marked
+			
+			var firebase_month=d.getMonth()+1;
+            var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
+            var firebase_section=$('#user_section').val();
+            var firebase_classtime=$('#class_time').val();
+            var databaseRef_final_att = firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/");
+            databaseRef_final_att.once('value', function(snapshot) 
+	  		{
+	  			var final_temp=snapshot.child("finalAttendance").val();
+	  			console.log("final attendance value: "+final_temp);
+	  			if(final_temp=="Yes"||final_temp=="yes")
+	  			{
+	  				console.log("yes attendance is marked");
+	  				alert("You have already punched the attendance for this slot");
+	  				window.location.href="markAttendance.html";
+
+	  			}
+	  			else
+	  			{
+	  				firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/finalAttendance").set("no");
+	  				console.log("no attendance is not marked");
+	  			}
+	  		});
+            //checking done if attendance is already marked
+
+
+			var nric = $('#user_section').val()+" "+$('#class_time').val()+" "+$('#class_subject').val()+" "+d.getTime();
+		    var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=50x50';
+		    $('#barcode').attr('src', url);
+	
+		    //setting variables
+
+            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Validation Code").set(nric);
+            
+            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Subject").set($('#class_subject').val()); 
+            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/studentList/Registration No").set("Name");
+
+
+			if(t_hours>=12)
+			{
+				amPm="PM";
+				thour_12=t_hours-12;
+				if(thour_12==0)
+				{
+					thour_12=12;
+				}
+			}
+			if(t_hours<12)
+			{
+				if(t_hours==0)
+				{
+					thour_12=0;
+				}
+				else
+				{
+					thour_12=t_hours;
+				}
+				amPm="AM";
+			}
+			document.getElementById("valid_time").innerHTML=thour_12+":"+t_minutes+" "+amPm;
+			// Set the date we're counting down to
+			var countDownDate = new Date(tf_date).getTime();
+
+			// Update the count down every 1 second
+
+
+			var x = setInterval(function() 
+			{
+
+				  // Get todays date and time
+				  var now = new Date().getTime();
+
+				  // Find the distance between now and the count down date
+				  var distance = countDownDate - now;
+
+				  // Time calculations for days, hours, minutes and seconds
+				  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+				  // Display the result in the element with id="demo"
+				  var total_seconds=(minutes*60)+seconds;
+				 
+				  
+				  if(total_seconds%30==0)
+				  {
+				  	var d2 = new Date();
+				  	var intermediate_time=d2.getTime();
+				  	
+				  	//----------------PRINTING QR CODE---------------------------//
+				  	var nric = $('#user_section').val()+" "+$('#class_time').val()+" "+$('#class_subject').val()+" "+intermediate_time;
+		            var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=50x50';
+		            $('#barcode').attr('src', url);
+		            
+		            //----------------PRINTING QR CODE---------------------------//
+		            var firebase_month=d.getMonth()+1;
+		            var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
+		            var firebase_section=$('#user_section').val();
+		            var firebase_classtime=$('#class_time').val();
+		            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Validation Code").set(nric);
+		     //        var data =  {
+					  //   "k1519" : {
+					  //     "9" : {
+					  //       "Validation Code" : nric
+					  //     }
+					  //   }
+					  // }
+					
+				   
+				   // var updates = {};
+				   // updates['/Attendance/'+firebase_date_entry] = data;
+				   // firebase.database().ref().update(updates);
+
+
+
+
+
+				  }
+				  document.getElementById("progressBar").value = 600 - --total_seconds;
+				  document.getElementById("demo").innerHTML = minutes + "m " + seconds + "s ";
+
+				  // If the count down is finished, write some text 
+				  if (distance < 0) {
+				  	var firebase_month=d.getMonth()+1;
+		            var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
+		            var firebase_section=$('#user_section').val();
+		            var firebase_classtime=$('#class_time').val();
+				  	firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/finalAttendance").set("no");
+				    clearInterval(x);
+				    document.getElementById("demo").innerHTML = "EXPIRED";
+				    
+				    var nric = "This SESSION has EXPIRED!";
+		            var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=50x50';
+		            $('#barcode').attr('src', url);
+				  }
+			}, 1000);
+			//---------------TIMER SCRIPT END---------------------------
+			
+            
+        }
+    </script>
+    <script>
+    	function final_punch()
+    	{
+    		var d = new Date();
+			t_date = d.getDate();
+			var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+			var t_month = months[d.getMonth()];
+			var t_year =d.getFullYear()
+			var t_hours=d.getHours();
+    		var firebase_month=d.getMonth()+1;
+            var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
+            var firebase_section=$('#user_section').val();
+            var firebase_classtime=$('#class_time').val();
+		  	firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/finalAttendance").set("Yes");
+		  	firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Validation Code").set("EXPIRED");
+		  	alert("Attendance has been punched successfully.");
+		  	window.location.href="markAttendance.html";
+
+    	}
+    	function show_realtime_studentlist()
+    	{
+    		var d = new Date();
+			t_date = d.getDate();
+			var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+			var t_month = months[d.getMonth()];
+			var t_year =d.getFullYear()
+			var t_hours=d.getHours();
+    		var firebase_month=d.getMonth()+1;
+            var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
+            var firebase_section=$('#user_section').val();
+            var firebase_classtime=$('#class_time').val();
+
+
+    		var table = document.getElementById("real_time_studentList");
+			var databaseRef = firebase.database().ref('Attendance/'+firebase_date_entry+'/'+firebase_section+'/'+firebase_classtime+'/studentList/');
+			var rowIndex = 1;
+			var rowsCount=0;
+
+			databaseRef.on('value', function(snapshot) 
+			{
+				if(rowsCount!=0)
+				{
+					for(var i = table. rows. length - 1; i > 0; i--)
+					{
+						table. deleteRow(i);
+					}
+					rowsCount=0;
+					rowIndex=1;
+				}
+				
+				snapshot.forEach(function(childSnapshot) 
+				{
+				   var childData = childSnapshot.val();
+				   var childKey = childSnapshot.key;
+				   
+				   var row = table.insertRow(rowIndex);
+				   var cellId = row.insertCell(0);
+				   var cellName=row.insertCell(1);
+				   cellId.innerHTML=childKey;
+				   cellName.innerHTML=childData;
+				   
+				   rowIndex = rowIndex + 1;
+				   rowsCount++;
+				});
+				rowIndex=1;
+			});
+    	}
+    </script>
+	<title>AMS</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	
+
+	
+</head>
+<body onload="load_details();">
+	<div class="container-fluid">
+		<nav class="navbar navbar-inverse navbar-fixed-top navpad1">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a href="#" class="navbar-brand" style="font-style: italic;">AMS</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li><a href="home.html">Home</a></li>
+					<li><a href="timetable.html">Time Table</a></li>
+					<li><a href="markAttendance.html">Mark Attendance</a></li>
+					<li><a href="#">Others</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id="set_faculty_name">Welcome</a></li>
+					<li style="margin-right: 20px;"><a href="logout.html">Logout</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+	<div class="container-fluid">
+		<br><br><br>
+		<div class="container">
+			
+			<div class="col-md-4">
+				<h2><u>Mark Attendance For</u></h2>
+				<form>
+					<div class="form-group">
+						<label for="school">Section</label>
+							<select class="form-control" id="user_section">
+								<option value="K1519">K1519</option>
+								<option value="K1527">K1527</option>
+								<option value="K1528">K1528</option>
+								<option value="K1529">K1529</option>
+							</select>
+					</div>
+					<div class="form-group">
+						<label>Time</label>
+						<select class="form-control" id="class_time">
+						  <option value="9">09:00 AM - 10:00 AM</option>
+						  <option value="10">10:00 AM - 11:00 AM</option>
+						  <option value="11">11:00 AM - 12:00 PM</option>
+						  <option value="12">12:00 PM - 01:00 PM</option>
+						  <option value="1">01:00 PM - 02:00 PM</option>
+						  <option value="2">02:00 PM - 03:00 PM</option>
+						  <option value="3">03:00 PM - 04:00 PM</option>
+						  <option value="4">04:00 PM - 05:00 PM</option>
+
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Subject</label>
+						<select class="form-control" id="class_subject">
+						  <!---Subjects to be fetched from database-------->
+						  <option value="S1">S1</option>
+						  <option value="S3">S3</option>
+						</select>
+					</div>
+				</form>
+				<div class="form-group">
+						<button id="generate_button" class="btn btn-success form-control" onclick="generateBarCode();">Generate QR Code</button>
+					</div>
+				<div class="col-md-12">
+					<br><br><br><br>
+					<table class="table table-bordered table-hover" style="font-size: 35px">
+						<tr>
+							<th>Valid Till :</th>
+							<th id="valid_time"></th>
+						</tr>
+						<tr>
+							<th>Timer :</th>
+							<th id="demo"></th>
+						</tr>
+					</table>
+					<progress value="0" max="600" id="progressBar"></progress>
+				</div>
+			</div>	
+			<div class="col-md-8">
+				<img id='barcode' 
+		            src="https://api.qrserver.com/v1/create-qr-code/?data=HelloWorld&amp;size=100x100" 
+		            alt="" 
+		            title="HELLO" 
+		            width="100%" />
+			</div>
+			<br><br>
+			<div class="col-md-12">
+				<table class="table table-stripped table-hover" id="real_time_studentList">
+					<thead>
+					<tr>
+						<th>Registration No.</th>
+					   <th>Name</th>
+					</tr>
+				</thead>
+				</table>
+				<button class="btn btn-info btn-block" onclick="final_punch();">Punch Attendance</button>
+			</div>
+		</div>
+
+</body>
+<script>
+
+	function load_details()
+	{
+		if(sessionStorage.getItem("faculty_name")==null)
+		{
+			window.location.href="index.html";
+		}
+		else
+		{
+			document.getElementById("set_faculty_name").innerHTML = sessionStorage.getItem("faculty_name");	
+		}
+		
+	}
+
+</script>	
+</html>

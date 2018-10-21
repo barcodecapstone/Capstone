@@ -1,0 +1,439 @@
+<html>
+<head>
+	<title>AMS</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	
+
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+
+
+	<style>
+		body {
+			   background-image: url("images/bg2.jpg");
+			   background-color: #cccccc;
+			   background-repeat: no-repeat;
+			   background-size: cover;
+			}
+			.heading {
+				font-family: 'Yatra One', cursive;
+				color: #0049aa;
+				font-size: 60px;
+			}
+			.login{
+				border:1px silver solid;
+				border-radius: 10px;
+				box-shadow: 0 11px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			}
+			.login-label{
+				color: #2a2b2d;
+			}
+	</style>
+</head>
+<body onload="check_loggedin();">
+	<div class="container">
+		<br><br>
+		<img src="images/logo.png" width="20%" style="margin-left: auto; margin-right: auto; display: block;" alt="Image not found">
+		<br>
+		<p class="heading text-center">Attendance Management System <i class="fas glyphicon glyphicon-pencil"></i></p>
+		<div class="col-md-4 col-md-offset-4">
+			<form class="login login-form" style="padding: 20px;">
+				<div class="form-group">
+					<label>Registration No:</label>
+					<input name="username_login" id="username_login" type="text" class="form-control">
+				</div>
+				<div class="form-group">
+					<label>Password</label>
+					<input name="userpassword_login" id="userpassword_login" type="text" class="form-control">
+				</div>
+				<div class="form-group">
+					<input type="button" value="Submit" onclick="login_user();" class="btn btn-info form-control">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#proceed_modal"  data-backdrop="static" data-keyboard="false"><i class="fas fa-user-plus"></i>&nbsp; &nbsp; Sign up</button>
+				</div>
+			</form>
+		</div>
+		<table style="color: white;" class="table table-bordered"  id="tbl_users_list" border="1">
+			<thead>
+				<tr>
+				   <th>Reg No.</th>
+				   <th>Name</th>
+				   <th>PASSWORD</th>
+				   <th>Stream</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+
+	<!-------------------------------MODAL FOR REGISTRATION----------------------------->
+	<div id="proceed_modal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>Faculty Registration <button class="close" data-dismiss="modal">&times;</button></h3>
+					
+				</div>
+				<div class="modal-body">
+					<form method="post">
+						<div class="form-group">
+							<label>Name</label>
+							<input id="user_name" type="text" class="form-control" placeholder="Full Name" required>
+						</div>
+						
+						<div class="form-group">
+							<script>
+								$(".reveal").on('click',function() 
+								{
+								    var $pwd = $(".pwd");
+								    if ($pwd.attr('type') === 'password') {
+								        $pwd.attr('type', 'text');
+								    } else {
+								        $pwd.attr('type', 'password');
+								    }
+								});
+							</script>
+							<label for="password">Password <p id="passwordStrength" style="font-size: 10px;"></p></label>
+							<input type="password" placeholder="Abc123#" class="form-control pwd" id="password1" oninput="scorePassword(this.value);" required>
+							
+						</div>
+						<div class="form-group">
+							<label for="cnfpassword">Confirm Password</label>
+							<input disabled type="password" class="form-control" id="user_password">
+							
+						</div>
+						<div class="form-group">
+							<label for="contact">Registration Number</label>
+							<input id="user_id" type="number" class="form-control" placeholder="11505628" required>
+						</div>
+						<div class="form-group">
+							<label for="school">Stream</label>
+							<select id="user_stream" class="form-control" onchange="fetch_subjects();" required>
+								<option>Select Stream/Department</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Subjects</label>
+							<select class="form-control" id="user_subject1" onchange="fetch_subject2();" required>
+								<option>Subject 1</option>
+							</select>
+							<select class="form-control" id="user_subject2" onchange="fetch_subject3();">
+								<option>Subject 2</option>
+							</select>
+							<select class="form-control" id="user_subject3">
+								<option>Subject 3</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<input type="button" onclick="save_user();" value="Submit" class="btn btn-danger btn-block">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<!--------------SCRIPT FOR FETCHING DATA TO TABLE FROM FIREBASE------------------->
+<script>
+	  var tblUsers = document.getElementById('tbl_users_list');
+	  var databaseRef = firebase.database().ref('facultyData/');
+	  var rowIndex = 1;
+	  
+	  databaseRef.once('value', function(snapshot) 
+	  {
+	    snapshot.forEach(function(childSnapshot) 
+	    {
+		   var childKey = childSnapshot.key;
+		   var childData = childSnapshot.val();
+		   
+		   var row = tblUsers.insertRow(rowIndex);
+		   var cellId = row.insertCell(0);
+		   var cellName = row.insertCell(1);
+		   var cellPwd = row.insertCell(2);
+		   var cellData = row.insertCell(3);
+		   cellId.appendChild(document.createTextNode(childKey));
+		   cellName.appendChild(document.createTextNode(childData.user_name));
+		   cellPwd.appendChild(document.createTextNode(childData.user_password));
+		   cellData.appendChild(document.createTextNode(childData.user_stream));
+		   
+		   rowIndex = rowIndex + 1;
+	    });
+	  });
+
+	  //SCRIPT FOR LOGGING IN USER
+	  function login_user()
+	  {
+	  	var uname = document.getElementById('username_login').value;
+	  	var upwd = document.getElementById('userpassword_login').value;
+	  	databaseRef.once('value', function(snapshot) 
+		  {
+		  	if(snapshot.hasChild(uname)) 
+		  	{
+		  		if(upwd==snapshot.child(uname).child('user_password').val())
+		  		{
+
+		  			sessionStorage.setItem("faculty_reg_no", uname);
+				   	sessionStorage.setItem("faculty_name", snapshot.child(uname).child('user_name').val());
+				    //console.log('lol');
+				    window.location.href="home.html";
+		  			//alert('exists '+snapshot.child(uname).child('user_password').val());	
+		  		}
+		  		else
+		  		{
+		  			alert('Wrong Password!!');
+		  		}   	
+			}
+			else
+			{
+				alert('Sorry this registration number is not valid!!');
+			}
+		  });
+	  }
+
+
+	  //------------------SCRIPT FOR ADDING A FACULTY
+
+	  function save_user()
+	  {
+
+	  	var modal_m= document.getElementById('proceed_modal');
+	  	var user_id = document.getElementById('user_id').value;
+	   var user_name = document.getElementById('user_name').value;
+	   var user_password = document.getElementById('user_password').value;
+	   var user_stream = document.getElementById('user_stream').value;
+	   var user_subject1 = document.getElementById('user_subject1').value;
+	   var user_subject2 = document.getElementById('user_subject2').value;
+	   var user_subject3 = document.getElementById('user_subject3').value;
+	   
+	  
+	   //var uid = firebase.database().ref().child('users').push().key;
+	   //var uid = document.getElementById('user_name').value;
+	   var data = {
+	    user_id: user_id,
+	    user_name: user_name,
+	    user_password: user_password,
+	    user_stream: user_stream,
+	    user_subject1: user_subject1,
+	    user_subject2: user_subject2,
+	    user_subject3: user_subject3
+	   }
+	   
+	   var updates = {};
+	   updates['/facultyData/' + user_id] = data;
+	   firebase.database().ref().update(updates);
+	   
+	   alert('The user is created successfully!');
+	   window.location.href="index.html";
+	  }
+</script>
+
+<!------------------------------Confirm Password Script------------------------>
+<script>
+	function scorePassword(pass) 
+		{
+			var a=0,b=0,c=0,d=0;
+			var p=" ",q=" ",r=" ",s=" ";
+		   	var word="Passwords must contain atleast one: ";
+		    
+		    var digits= /\d/.test(pass);
+		    var lower= /[a-z]/.test(pass);
+		    var upper= /[A-Z]/.test(pass);
+		    var specialChar= /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
+		    
+		    if(digits==false)
+		    {
+		    	a=1;
+		    	p="digit ";
+		    	word=word+p;
+		    	// alert('must contain a digit');
+		    }
+		     if(lower==false)
+		    {
+		    	b=1;
+		    	q=",lower-case letter ";
+		    	word=word+q;
+		    }
+		    if(upper==false)
+		    {
+		    	c=1;
+		    	r=",upper-case letter ";
+		    	word=word+r;
+		    }
+		    if(specialChar==false)
+		    {
+		    	d=1;
+		    	s="& special character ";
+		    	word=word+s;
+		    }
+		    if(a||b||c||d)
+		    {
+		    	 document.getElementById('passwordStrength').innerHTML = word;
+		    	 document.getElementById("passwordStrength").style.color = "red";
+		    }
+		    if((a||b||c||d)==0)
+		    {
+		    	if(pass.length<8)
+		    	{
+		    		document.getElementById('passwordStrength').innerHTML = 'Password cannot have less than 8 characters';
+		    		document.getElementById("passwordStrength").style.color = "red";
+		    	}
+		    	else
+		    	{
+		    		document.getElementById('passwordStrength').innerHTML = 'You are good to go';
+		    		document.getElementById("passwordStrength").style.color = "green";
+		    		document.getElementById("user_password").disabled = false;
+		    	}
+		    	
+		    }
+		}	
+</script>
+<script>
+	function check_loggedin()
+	{
+		if(sessionStorage.getItem("faculty_name")!=null)
+		{
+			window.location.href="home.html";
+		}
+
+
+		var x = document.getElementById("user_stream");
+		var option = document.createElement("option");
+		// option.text = "Kiwi";
+		// x.add(option);	
+
+		var databaseRef=firebase.database().ref('sections/');
+		databaseRef.once('value', function(snapshot) 
+		{
+			snapshot.forEach(function(childSnapshot) 
+			{
+			    var childKey = childSnapshot.key;
+   				var childData = childSnapshot.val();
+   				var option2 = document.createElement("option");
+				option2.text = childKey;
+				option2.value = childKey;
+				x.add(option2);	
+			});
+		});
+		
+	}
+
+
+	function fetch_subjects()
+	{
+		var x1 = document.getElementById("user_subject1");
+		var x2 = document.getElementById("user_subject2");
+		var x3 = document.getElementById("user_subject3");
+		var option = document.createElement("option");
+		var selected_course=document.getElementById("user_stream").value;
+		console.log(selected_course);
+		// option.text = "Kiwi";
+		// x.add(option);	
+		while(x1.length > 1)   
+		{
+		    // x1.remove(x1.length-1);  //removing previously fetched items
+		    // x2.remove(x1.length-1);
+		    x1.remove(x1.length-1);
+		    console.log("removing");
+		}
+		while(x2.length > 1)   
+		{
+		    x2.remove(x2.length-1);
+		    console.log("removing");
+		}
+		while(x3.length > 1)   
+		{
+		    x3.remove(x3.length-1);
+		    console.log("removing");
+		}
+
+		var databaseRef=firebase.database().ref('courses/'+selected_course+"/Year 1/");
+		databaseRef.once('value', function(snapshot) 
+		{
+			snapshot.forEach(function(childSnapshot) 
+			{
+			    var childKey = childSnapshot.key;
+   				var childData = childSnapshot.val();
+   				var option2 = document.createElement("option");
+				option2.text = childData;
+				option2.value = childKey;
+				x1.add(option2);	
+			});
+		});
+		var databaseRef2=firebase.database().ref('courses/'+selected_course+"/Year 2/");
+		databaseRef2.once('value', function(snapshot) 
+		{
+			snapshot.forEach(function(childSnapshot) 
+			{
+			    var childKey = childSnapshot.key;
+   				var childData = childSnapshot.val();
+   				var option2 = document.createElement("option");
+				option2.text = childData;
+				option2.value = childKey;	
+				x1.add(option2);	
+			});
+		});
+
+		var databaseRef3=firebase.database().ref('courses/'+selected_course+"/Year 3/");
+		databaseRef3.once('value', function(snapshot) 
+		{
+			snapshot.forEach(function(childSnapshot) 
+			{
+			    var childKey = childSnapshot.key;
+   				var childData = childSnapshot.val();
+   				var option2 = document.createElement("option");
+				option2.text = childData;
+				option2.value = childKey;	
+				x1.add(option2);	
+			});
+		});
+
+		
+		
+	}
+	function fetch_subject2()
+	{
+
+		var x2 = document.getElementById("user_subject2");
+		while(x2.length > 1)   
+		{
+		    x2.remove(x2.length-1);
+		    console.log("removing");
+		}
+		var options = $("#user_subject1>option").clone();
+		$('#user_subject2').append(options);
+		x2.remove(1);
+	}
+	function fetch_subject3()
+	{
+		var x3 = document.getElementById("user_subject3");
+		while(x3.length > 1)   
+		{
+		    x3.remove(x3.length-1);
+		    console.log("removing");
+		}
+		var options = $("#user_subject1>option").clone();
+		$('#user_subject3').append(options);
+		x3.remove(1);
+	}
+</script>
+</html>

@@ -1,0 +1,192 @@
+
+<html>
+<head>
+	<script>
+		//USER DETAILS
+		var current_faculty_id=sessionStorage.getItem("faculty_reg_no");  //to be fetched from sessions
+	</script>
+	<title>AMS</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	
+
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+
+	  	var d = new Date();
+		var weekday = new Array(7);
+		weekday[0] =  "sunday";
+		weekday[1] = "monday";
+		weekday[2] = "tuesday";
+		weekday[3] = "wednesday";
+		weekday[4] = "thursday";
+		weekday[5] = "friday";
+		weekday[6] = "saturday";
+
+		var n = weekday[d.getDay()];
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+</head>
+<body onload="load_details();">
+	<div class="container-fluid">
+		<nav class="navbar navbar-inverse navbar-fixed-top navpad1">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a href="#" class="navbar-brand" style="font-style: italic;">AMS</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li><a href="#">Home</a></li>
+					<li><a href="timetable.html">Time Table</a></li>
+					<li><a href="markAttendance.html">Mark Attendance</a></li>
+					<li><a href="#">Others</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id="set_faculty_name">Welcome</a></li>
+					<li style="margin-right: 20px;"><a href="logout.html">Logout</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container">
+			<div style="margin-top: 60px;">
+					<h2 id="current_day"></h2>
+					<table class="table table-bordered table-responsive table-hover"  id="time_table_list" border="1">
+						<thead>
+							<tr>
+							   <th>9-10</th>
+							   <th>10-11</th>
+							   <th>11-12</th>
+							   <th>12-1</th>
+							   <th>1-2</th>
+							   <th>2-3</th>
+							   <th>3-4</th>
+							   <th>4-5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="pt1"> </td>
+								<td id="pt2"> </td>
+								<td id="pt3"> </td>
+								<td id="pt4"> </td>
+								<td id="pt5"> </td>
+								<td id="pt6"> </td>
+								<td id="pt7"> </td>
+								<td id="pt8"> </td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>			
+		</div>
+
+</body>
+<script>
+
+	function load_details()
+	{
+		if(sessionStorage.getItem("faculty_name")==null)
+		{
+			window.location.href="index.html";
+		}
+		else
+		{
+			document.getElementById("set_faculty_name").innerHTML = sessionStorage.getItem("faculty_name");	
+		}
+	}
+
+	//Printing current day
+	var actual_day=n+"'s Time Table";
+	document.getElementById("current_day").innerHTML=actual_day;
+
+	//finding timetable
+	var tblTimeTable = document.getElementById('time_table_list');
+	var databaseRef = firebase.database().ref('timeTable/');
+	  var rowIndex = 1;
+	  
+	  databaseRef.once('value', function(snapshot) 
+	  {
+	    snapshot.forEach(function(childSnapshot) 
+	    {
+		   var childKey = childSnapshot.key;
+		   var childData = childSnapshot.val();
+		   
+		   var row = tblTimeTable.insertRow(rowIndex);
+		   
+
+
+		   var t1=childSnapshot.child(n).child("9").child("faculty").val();  //Faculty Retrived
+		   if(current_faculty_id==t1)
+		   {
+		   		document.getElementById("pt1").innerHTML=childKey;
+		   	
+		   }
+		   
+		   var p2=childSnapshot.child(n).child("10").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p2)
+		   {
+		   	document.getElementById("pt2").innerHTML=childKey;
+		 	
+		   }
+		   var p3=childSnapshot.child(n).child("11").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p3)
+		   {
+		   	document.getElementById("pt3").innerHTML=childKey;
+		 	
+		   }
+		   var p4=childSnapshot.child(n).child("12").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p4)
+		   {
+		   	document.getElementById("pt4").innerHTML=childKey;
+		 	
+		   }
+		   var p5=childSnapshot.child(n).child("1").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p5)
+		   {
+		   	document.getElementById("pt5").innerHTML=childKey;
+		 	
+		   }
+		   var p6=childSnapshot.child(n).child("2").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p6)
+		   {
+		   	document.getElementById("pt6").innerHTML=childKey;
+		 	
+		   }
+		   var p7=childSnapshot.child(n).child("3").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p7)
+		   {
+		   	document.getElementById("pt7").innerHTML=childKey;
+		 	
+		   }
+		   var p8=childSnapshot.child(n).child("4").child("faculty").val();
+		     //Faculty Retrived
+		   if(current_faculty_id==p8)
+		   {
+		   	document.getElementById("pt8").innerHTML=childKey;
+		 	
+		   }
+		   		   
+		   rowIndex = rowIndex + 1;
+	    });
+	  });
+</script>
+</html>

@@ -1,0 +1,100 @@
+<html>
+<head>
+	<title>Realtime Data Fetching</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	
+
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+</head>
+
+<body>
+	<div class="container">
+		<button onclick="call_func();">Click me</button>
+		<div class="jumbotron">
+			<h1>hello</h1>
+		</div>
+	</div>
+	<div>
+		<table class="table table-striped table-bordered table-responsive table-hover"  id="student_list" border="1">
+				<thead>
+					<tr>
+					   <th>Name</th>
+					</tr>
+				</thead>
+	
+		</table>
+	</div>
+</body>
+<script>
+	var table = document.getElementById("student_list");
+	var databaseRef = firebase.database().ref('facultyData/');
+	var rowIndex = 1;
+	var rowsCount=0;
+
+	databaseRef.on('value', function(snapshot) 
+	{
+		if(rowsCount!=0)
+		{
+			for(var i = table. rows. length - 1; i > 0; i--)
+			{
+				table. deleteRow(i);
+			}
+			rowsCount=0;
+			rowIndex=1;
+		}
+		
+		snapshot.forEach(function(childSnapshot) 
+		{
+		   var childKey = childSnapshot.key;
+		   
+		   var row = table.insertRow(rowIndex);
+		   var cellId = row.insertCell(0);
+		   cellId.innerHTML=childKey;
+		   
+		   rowIndex = rowIndex + 1;
+		   rowsCount++;
+		});
+		rowIndex=1;
+	});
+</script>
+<script>
+	var rowindex=1;
+	function call_func()
+	{
+		var table = document.getElementById("student_list");
+		var row = table.insertRow(rowindex);
+		var cell1=row.insertCell(0);
+		cell1.appendChild(document.createTextNode(rowindex));
+
+
+		//other way to add rows without appending
+		//var row = table.insertRow(rowindex);
+
+		// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+		//var cell1 = row.insertCell(0);
+
+
+		// Add some text to the new cells:
+		//cell1.innerHTML = "NEW CELL1";
+		rowindex++;
+	}
+</script>
+</html>

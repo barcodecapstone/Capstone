@@ -1,0 +1,23 @@
+<html>
+<head>
+	<title>Timer</title>
+	<script>
+		function start_timer()
+		{
+			var timeleft = 10;
+			var downloadTimer = setInterval(function(){
+			  document.getElementById("progressBar").value = 10 - --timeleft;
+			  document.getElementById("seconds").innerHTML=10-document.getElementById("progressBar").value;
+			  if(timeleft <= 0)
+			    clearInterval(downloadTimer);
+			},1000);
+		}
+		
+	</script>
+</head>
+<body>
+	<button onclick="start_timer();">Start Timer</button>
+	<progress value="0" max="10" id="progressBar"></progress>
+	<h2 id="seconds"></h2>
+</body>
+</html>
