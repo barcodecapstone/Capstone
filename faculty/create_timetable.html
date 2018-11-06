@@ -33,9 +33,9 @@
 			if(table_size!=0)
 			{
 				for(var i = table. rows. length - 1; i > 0; i--)
-					{
-						table. deleteRow(i);
-					}
+				{
+					table. deleteRow(i);
+				}
 			}
     		//console.log("table length: "+table_size);
 			var x = document.getElementById("department_section");
@@ -154,6 +154,88 @@
 				rowIndex=1;
 			});
 			console.log(no_of_rows+" these are no of rows");
+
+		}
+
+		function fetch_faculty_list()
+		{
+			var table_again=document.getElementById("courses_table");
+			var table_again_size=table_again.rows.length;
+			console.log("No of rows in the courses table are: "+table_again_size);
+
+			var no_of_subjects = [];
+
+
+			var selected_course=document.getElementById('department_list').value;
+    		var selected_year=document.getElementById('department_year').value;
+			var databaseRef = firebase.database().ref('courses/'+selected_course+"/"+selected_year+"/");
+			
+			databaseRef.on('value', function(snapshot) 
+			{
+				snapshot.forEach(function(childSnapshot) 
+				{
+				   var childData = childSnapshot.val();
+				   var childKey = childSnapshot.key;
+				   
+				   
+				   no_of_subjects.push(childKey);
+				});
+				
+			});
+
+			var x = no_of_subjects.length;
+
+			// console.log(x+" is the no of subjects you have");
+			// while(x>0)
+			// {
+			// 	console.log(no_of_subjects[x-1]);
+			// 	x--;
+			// }
+			var table2faculty=document.getElementById("faculty_table");
+			var databaseRef = firebase.database().ref('facultyData/');
+			databaseRef.once('value', function(snapshot) 
+			{
+				snapshot.forEach(function(childSnapshot) 
+				{
+				   var childKey = childSnapshot.key;
+				   var childData = childSnapshot.val();
+				   
+				   for(var temp=0;temp<x;temp++)
+				   {
+						
+						// cellId.innerHTML=childKey;
+						if(childData.user_subject1==no_of_subjects[temp])
+						{
+							var row = table2faculty.insertRow(1);
+							var cellId = row.insertCell(0);
+							var cell_reg = row.insertCell(1);
+							cellId.innerHTML=childData.user_name+"		"+childData.user_subject1;
+							cell_reg.innerHTML=childData.user_id+" ";
+							console.log("matched faculty: "+childData.user_name+" for subject: "+childData.user_subject1);
+						}	
+						if(childData.user_subject2==no_of_subjects[temp])
+						{
+							var row = table2faculty.insertRow(1);
+							var cellId = row.insertCell(0);
+							var cell_reg = row.insertCell(1);
+							cellId.innerHTML=childData.user_name+"		"+childData.user_subject2;
+							cell_reg.innerHTML=childData.user_id+" ";
+							console.log("matched faculty: "+childData.user_name+" for subject: "+childData.user_subject2);
+						}	
+						if(childData.user_subject3==no_of_subjects[temp])
+						{
+							var row = table2faculty.insertRow(1);
+							var cellId = row.insertCell(0);
+							var cell_reg = row.insertCell(1);
+							cellId.innerHTML=childData.user_name+"		"+childData.user_subject3;
+							cell_reg.innerHTML=childData.user_id+" ";
+							console.log("matched faculty: "+childData.user_name+" for subject: "+childData.user_subject3);
+						}	
+				   }
+				   
+
+				});
+			});
 			
 		}
 		function clear_table()
@@ -200,7 +282,7 @@
 		</div>
 		<button class="btn btn-success btn-block" onclick="fetch_courses();">Fetch Details</button>
 		<div class="col-md-2">
-			<table class="table table-bordered table-striped" id="courses_table">
+			<table class="table table-striped table-bordered" id="courses_table">
 				<thead>
 					<tr>
 						<th>Course Code</th>
@@ -225,208 +307,632 @@
 				<tr>
 					<td>Monday</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub1" type="text" placeholder="Subject" class="form-control">
+						<input id="fac1" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub2" type="text" placeholder="Subject" class="form-control">
+						<input id="fac2" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub3" type="text" placeholder="Subject" class="form-control">
+						<input id="fac3" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub4" type="text" placeholder="Subject" class="form-control">
+						<input id="fac4" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub5" type="text" placeholder="Subject" class="form-control">
+						<input id="fac5" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub6" type="text" placeholder="Subject" class="form-control">
+						<input id="fac6" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub7" type="text" placeholder="Subject" class="form-control">
+						<input id="fac7" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub8" type="text" placeholder="Subject" class="form-control">
+						<input id="fac8" type="text" placeholder="Faculty" class="form-control">
 					</td>
 				</tr>
 				<tr>
 					<td>Tuesday</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub9" type="text" placeholder="Subject" class="form-control">
+						<input id="fac9" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub10" type="text" placeholder="Subject" class="form-control">
+						<input id="fac10" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub11" type="text" placeholder="Subject" class="form-control">
+						<input id="fac11" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub12" type="text" placeholder="Subject" class="form-control">
+						<input id="fac12" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub13" type="text" placeholder="Subject" class="form-control">
+						<input id="fac13" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub14" type="text" placeholder="Subject" class="form-control">
+						<input id="fac14" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub15" type="text" placeholder="Subject" class="form-control">
+						<input id="fac15" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub16" type="text" placeholder="Subject" class="form-control">
+						<input id="fac16" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					
 				</tr>
 				<tr>
 					<td>Thursday</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub17" type="text" placeholder="Subject" class="form-control">
+						<input id="fac17" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub18" type="text" placeholder="Subject" class="form-control">
+						<input id="fac18" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub19" type="text" placeholder="Subject" class="form-control">
+						<input id="fac19" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub20" type="text" placeholder="Subject" class="form-control">
+						<input id="fac20" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub21" type="text" placeholder="Subject" class="form-control">
+						<input id="fac21" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub22" type="text" placeholder="Subject" class="form-control">
+						<input id="fac22" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub23" type="text" placeholder="Subject" class="form-control">
+						<input id="fac23" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub24" type="text" placeholder="Subject" class="form-control">
+						<input id="fac24" type="text" placeholder="Faculty" class="form-control">
 					</td>
+					
 					
 				</tr>
 				<tr>
 					<td>Wednesday</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub25" type="text" placeholder="Subject" class="form-control">
+						<input id="fac25" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub26" type="text" placeholder="Subject" class="form-control">
+						<input id="fac26" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub27" type="text" placeholder="Subject" class="form-control">
+						<input id="fac27" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub28" type="text" placeholder="Subject" class="form-control">
+						<input id="fac28" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub29" type="text" placeholder="Subject" class="form-control">
+						<input id="fac29" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub30" type="text" placeholder="Subject" class="form-control">
+						<input id="fac30" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub31" type="text" placeholder="Subject" class="form-control">
+						<input id="fac31" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub32" type="text" placeholder="Subject" class="form-control">
+						<input id="fac32" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					
 				</tr>
 				<tr>
 					<td>Thursday</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub33" type="text" placeholder="Subject" class="form-control">
+						<input id="fac33" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub34" type="text" placeholder="Subject" class="form-control">
+						<input id="fac34" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub35" type="text" placeholder="Subject" class="form-control">
+						<input id="fac35" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub36" type="text" placeholder="Subject" class="form-control">
+						<input id="fac36" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub37" type="text" placeholder="Subject" class="form-control">
+						<input id="fac37" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub38" type="text" placeholder="Subject" class="form-control">
+						<input id="fac38" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub39" type="text" placeholder="Subject" class="form-control">
+						<input id="fac39" type="text" placeholder="Faculty" class="form-control">
 					</td>
 					<td>
-						<input type="text" placeholder="Subject" class="form-control">
-						<input type="text" placeholder="Faculty" class="form-control">
+						<input id="sub40" type="text" placeholder="Subject" class="form-control">
+						<input id="fac40" type="text" placeholder="Faculty" class="form-control">
 					</td>
+					
+					
+				</tr>
+				<tr>
+					<td>Friday</td>
+					
+					<td>
+						<input id="sub41" type="text" placeholder="Subject" class="form-control">
+						<input id="fac41" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub42" type="text" placeholder="Subject" class="form-control">
+						<input id="fac42" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub43" type="text" placeholder="Subject" class="form-control">
+						<input id="fac43" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub44" type="text" placeholder="Subject" class="form-control">
+						<input id="fac44" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub45" type="text" placeholder="Subject" class="form-control">
+						<input id="fac45" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub46" type="text" placeholder="Subject" class="form-control">
+						<input id="fac46" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub47" type="text" placeholder="Subject" class="form-control">
+						<input id="fac47" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					<td>
+						<input id="sub48" type="text" placeholder="Subject" class="form-control">
+						<input id="fac48" type="text" placeholder="Faculty" class="form-control">
+					</td>
+					
 					
 				</tr>
 			</table>
 		</div>
 		<div class="col-md-2">
-			<table class="table table-striped table-bordered">
+			<table class="table table-striped table-bordered" id="faculty_table">
 				<tr>
-					<th>Course Code</th>
-					<th>Faculty Name</th>
-				</tr>
-				<tr>
-					<th>l1</th>
-					<th>Chinmay</th>
-				</tr>
-				<tr>
-					<th>l2</th>
-					<th>Chinmay2</th>
-				</tr>
-				<tr>
-					<th>L3</th>
-					<th>Chinmay3</th>
-				</tr>
-				<tr>
-					<th>S1</th>
-					<th>Chinmay</th>
+					<th colspan="2">
+						<button class="btn btn-block btn-info" onclick="fetch_faculty_list();">Load Faculties</button>
+					</th>
 				</tr>
 			</table>
 		</div>
+		<br>
+		<div class="col-md-8 col-md-offset-2">
+			<button class="btn btn-block btn-success" onclick="add_timetable_to_database();">Create Time Table</button>
+		</div>
 	</div>
 </body>
+<script>
+	function add_timetable_to_database()
+	{
+
+
+		//---------------------------------M O N D A Y--------------------------------------------------------------//
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/9/faculty/").set($('#fac1').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/9/subject/").set($('#sub1').val());
+		if($('#fac1').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac1').val()+"/monday/9/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac1').val()+"/monday/9/subject").set($('#sub1').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/10/faculty/").set($('#fac2').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/10/subject/").set($('#sub2').val());
+		if($('#fac2').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac2').val()+"/monday/10/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac2').val()+"/monday/10/subject").set($('#sub2').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/11/faculty/").set($('#fac3').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/11/subject/").set($('#sub3').val());
+		if($('#fac3').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac3').val()+"/monday/11/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac3').val()+"/monday/11/subject").set($('#sub3').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/12/faculty/").set($('#fac4').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/12/subject/").set($('#sub4').val());
+		if($('#fac4').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac4').val()+"/monday/12/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac4').val()+"/monday/12/subject").set($('#sub4').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/1/faculty/").set($('#fac5').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/1/subject/").set($('#sub5').val());
+		if($('#fac5').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac5').val()+"/monday/1/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac5').val()+"/monday/1/subject").set($('#sub5').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/2/faculty/").set($('#fac6').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/2/subject/").set($('#sub6').val());
+		if($('#fac6').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac6').val()+"/monday/2/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac6').val()+"/monday/2/subject").set($('#sub6').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/3/faculty/").set($('#fac7').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/3/subject/").set($('#sub7').val());
+		if($('#fac7').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac7').val()+"/monday/3/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac7').val()+"/monday/3/subject").set($('#sub7').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/4/faculty/").set($('#fac8').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/monday/4/subject/").set($('#sub8').val());
+		if($('#fac8').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac8').val()+"/monday/4/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac8').val()+"/monday/4/subject").set($('#sub8').val());
+		}
+
+
+
+
+
+
+
+
+
+		// //---------------------------------T U E S D A Y--------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/9/faculty/").set($('#fac9').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/9/subject/").set($('#sub9').val());
+		if($('#fac9').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac9').val()+"/tuesday/9/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac9').val()+"/tuesday/9/subject").set($('#sub9').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/10/faculty/").set($('#fac10').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/10/subject/").set($('#sub10').val());
+		if($('#fac10').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac10').val()+"/tuesday/10/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac10').val()+"/tuesday/10/subject").set($('#sub10').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/11/faculty/").set($('#fac11').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/11/subject/").set($('#sub11').val());
+		if($('#fac11').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac11').val()+"/tuesday/11/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac11').val()+"/tuesday/11/subject").set($('#sub11').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/12/faculty/").set($('#fac12').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/12/subject/").set($('#sub12').val());
+		if($('#fac12').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac12').val()+"/tuesday/12/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac12').val()+"/tuesday/12/subject").set($('#sub12').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/1/faculty/").set($('#fac13').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/1/subject/").set($('#sub13').val());
+		if($('#fac13').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac13').val()+"/tuesday/1/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac13').val()+"/tuesday/1/subject").set($('#sub13').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/2/faculty/").set($('#fac14').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/2/subject/").set($('#sub14').val());
+		if($('#fac14').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac14').val()+"/tuesday/2/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac14').val()+"/tuesday/2/subject").set($('#sub14').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/3/faculty/").set($('#fac15').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/3/subject/").set($('#sub15').val());
+		if($('#fac15').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac15').val()+"/tuesday/3/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac15').val()+"/tuesday/3/subject").set($('#sub15').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/4/faculty/").set($('#fac16').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/tuesday/4/subject/").set($('#sub16').val());
+		if($('#fac16').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac16').val()+"/tuesday/4/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac16').val()+"/tuesday/4/subject").set($('#sub16').val());
+		}
+
+
+
+
+
+
+		// //---------------------------------W E D N E S D A Y--------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/9/faculty/").set($('#fac17').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/9/subject/").set($('#sub17').val());
+		if($('#fac17').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac17').val()+"/wednesday/9/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac17').val()+"/wednesday/9/subject").set($('#sub17').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/10/faculty/").set($('#fac18').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/10/subject/").set($('#sub18').val());
+		if($('#fac18').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac18').val()+"/wednesday/10/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac18').val()+"/wednesday/10/subject").set($('#sub18').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/11/faculty/").set($('#fac19').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/11/subject/").set($('#sub19').val());
+		if($('#fac19').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac19').val()+"/wednesday/11/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac19').val()+"/wednesday/11/subject").set($('#sub19').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/12/faculty/").set($('#fac20').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/12/subject/").set($('#sub20').val());
+		if($('#fac20').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac20').val()+"/wednesday/12/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac20').val()+"/wednesday/12/subject").set($('#sub20').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/1/faculty/").set($('#fac21').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/1/subject/").set($('#sub21').val());
+		if($('#fac21').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac21').val()+"/wednesday/1/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac21').val()+"/wednesday/1/subject").set($('#sub21').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/2/faculty/").set($('#fac22').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/2/subject/").set($('#sub22').val());
+		if($('#fac22').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac22').val()+"/wednesday/2/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac22').val()+"/wednesday/2/subject").set($('#sub22').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/3/faculty/").set($('#fac23').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/3/subject/").set($('#sub23').val());
+		if($('#fac23').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac23').val()+"/wednesday/3/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac23').val()+"/wednesday/3/subject").set($('#sub23').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/4/faculty/").set($('#fac24').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/wednesday/4/subject/").set($('#sub24').val());
+		if($('#fac24').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac24').val()+"/wednesday/4/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac24').val()+"/wednesday/4/subject").set($('#sub24').val());
+		}
+
+
+
+
+
+
+		//---------------------------------T H U R S D A Y--------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/9/faculty/").set($('#fac25').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/9/subject/").set($('#sub25').val());
+		if($('#fac25').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac25').val()+"/thursday/9/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac25').val()+"/thursday/9/subject").set($('#sub25').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/10/faculty/").set($('#fac26').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/10/subject/").set($('#sub26').val());
+		if($('#fac26').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac26').val()+"/thursday/10/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac26').val()+"/thursday/10/subject").set($('#sub26').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/11/faculty/").set($('#fac27').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/11/subject/").set($('#sub27').val());
+		if($('#fac27').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac27').val()+"/thursday/11/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac27').val()+"/thursday/11/subject").set($('#sub27').val());
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/12/faculty/").set($('#fac28').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/12/subject/").set($('#sub28').val());
+		if($('#fac28').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac28').val()+"/thursday/12/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac28').val()+"/thursday/12/subject").set($('#sub28').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/1/faculty/").set($('#fac29').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/1/subject/").set($('#sub29').val());
+		if($('#fac29').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac29').val()+"/thursday/1/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac29').val()+"/thursday/1/subject").set($('#sub29').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/2/faculty/").set($('#fac30').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/2/subject/").set($('#sub30').val());
+		if($('#fac30').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac30').val()+"/thursday/2/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac30').val()+"/thursday/2/subject")set($('#sub30').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/3/faculty/").set($('#fac31').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/3/subject/").set($('#sub31').val());
+		if($('#fac31').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac31').val()+"/thursday/3/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac31').val()+"/thursday/3/subject").set($('#sub31').val());
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/4/faculty/").set($('#fac32').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/thursday/4/subject/").set($('#sub32').val());
+		if($('#fac32').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac32').val()+"/thursday/4/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac32').val()+"/thursday/4/subject").set($('#sub32').val());
+
+
+
+
+
+
+		//---------------------------------F R I D A Y-----------------------------------------------------------------//
+
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/9/faculty/").set($('#fac33').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/9/subject/").set($('#sub33').val());
+		if($('#fac33').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac33').val()+"/friday/9/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac33').val()+"/friday/9/subject").set($('#sub33').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/10/faculty/").set($('#fac34').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/10/subject/").set($('#sub34').val());
+		if($('#fac34').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac34').val()+"/friday/10/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac34').val()+"/friday/10/subject").set($('#sub34').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/11/faculty/").set($('#fac35').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/11/subject/").set($('#sub35').val());
+		if($('#fac35').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac35').val()+"/friday/11/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac35').val()+"/friday/11/subject").set($('#sub35').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/12/faculty/").set($('#fac36').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/12/subject/").set($('#sub36').val());
+		if($('#fac36').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac36').val()+"/friday/12/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac36').val()+"/friday/12/subject").set($('#sub36').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/1/faculty/").set($('#fac37').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/1/subject/").set($('#sub37').val());
+		if($('#fac37').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac37').val()+"/friday/1/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac37').val()+"/friday/1/subject").set($('#sub37').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/2/faculty/").set($('#fac38').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/2/subject/").set($('#sub38').val());
+		if($('#fac38').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac38').val()+"/friday/2/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac38').val()+"/friday/2/subject").set($('#sub38').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/3/faculty/").set($('#fac39').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/3/subject/").set($('#sub39').val());
+		if($('#fac39').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac39').val()+"/friday/3/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac39').val()+"/friday/3/subject").set($('#sub39').val());
+		}
+		//---------------------------------------------------------------------------------------------------------//
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/4/faculty/").set($('#fac40').val());
+		firebase.database().ref('ST/'+$('#department_section').val()+"/friday/4/subject/").set($('#sub40').val());
+		if($('#fac40').val()!="")  //if faculty field is not empty i.e, if it is filled then create FT accordingly
+		{
+			//alert("faculty cannot be empty");
+			firebase.database().ref("FT/"+$('#fac40').val()+"/friday/4/section").set($('#department_section').val());
+			firebase.database().ref("FT/"+$('#fac40').val()+"/friday/4/subject").set($('#sub40').val());
+		}
+		
+		
+	}
+</script>
 </html>
