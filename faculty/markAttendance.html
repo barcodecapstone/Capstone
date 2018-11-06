@@ -48,6 +48,11 @@
 
 
 			t_date = d.getDate();
+			if(t_date<10)
+			{
+				t_date="0"+t_date;
+			}
+
 			var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
 			var t_month = months[d.getMonth()];
 			var t_year =d.getFullYear()
@@ -67,6 +72,10 @@
 			//checking if attendance is already marked
 			
 			var firebase_month=d.getMonth()+1;
+			if(firebase_month<10)
+			{
+				firebase_month="0"+firebase_month;
+			}
             var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
             var firebase_section=$('#user_section').val();
             var firebase_classtime=$('#class_time').val();
@@ -100,7 +109,8 @@
             firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Validation Code").set(nric);
             
             firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/Subject").set($('#class_subject').val()); 
-            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/studentList/Registration No").set("Name");
+            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/studentList/Roll No/Name").set("Name");
+            firebase.database().ref('Attendance/'+firebase_date_entry+"/"+firebase_section+"/"+firebase_classtime+"/studentList/Roll No/Reg no").set("Reg No");
 
 
 			if(t_hours>=12)
@@ -230,11 +240,19 @@
     	{
     		var d = new Date();
 			t_date = d.getDate();
+			if(t_date<10)
+			{
+				t_date="0"+t_date;
+			}
 			var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
 			var t_month = months[d.getMonth()];
 			var t_year =d.getFullYear()
 			var t_hours=d.getHours();
     		var firebase_month=d.getMonth()+1;
+    		if(firebase_month<10)
+    		{
+    			firebase_month="0"+firebase_month;
+    		}
             var firebase_date_entry=t_date+"-"+firebase_month+"-"+t_year;
             var firebase_section=$('#user_section').val();
             var firebase_classtime=$('#class_time').val();
@@ -242,36 +260,39 @@
 
     		var table = document.getElementById("real_time_studentList");
 			var databaseRef = firebase.database().ref('Attendance/'+firebase_date_entry+'/'+firebase_section+'/'+firebase_classtime+'/studentList/');
-			var rowIndex = 1;
-			var rowsCount=0;
-
+			var rows_Index = 1;
+			var rows_Count=0;
 			databaseRef.on('value', function(snapshot) 
 			{
-				if(rowsCount!=0)
+				if(rows_Count!=0)
 				{
 					for(var i = table. rows. length - 1; i > 0; i--)
 					{
 						table. deleteRow(i);
 					}
-					rowsCount=0;
-					rowIndex=1;
+					rows_Count=0;
+					rows_Index=1;
 				}
 				
 				snapshot.forEach(function(childSnapshot) 
 				{
-				   var childData = childSnapshot.val();
+				   //var childData = childSnapshot.val();
 				   var childKey = childSnapshot.key;
+				   var row = table.insertRow(rows_Index);
+				   var cellRollNo = row.insertCell(0);
+				   var cellName   = row.insertCell(1);
+				   var cellRegNo  = row.insertCell(2);
 				   
-				   var row = table.insertRow(rowIndex);
-				   var cellId = row.insertCell(0);
-				   var cellName=row.insertCell(1);
-				   cellId.innerHTML=childKey;
-				   cellName.innerHTML=childData;
+			   	   cellRollNo.innerHTML=childKey;
+				   cellRegNo.innerHTML=childSnapshot.child("Reg no").val();
+				   cellName.innerHTML=childSnapshot.child("Name").val();
 				   
-				   rowIndex = rowIndex + 1;
-				   rowsCount++;
+				   rows_Index = rows_Index + 1;
+				   rows_Count++;	
+				   
+				   
 				});
-				rowIndex=1;
+				rows_Index=1;
 			});
     	}
     </script>
@@ -292,7 +313,7 @@
 				<div class="navbar-header">
 					<a href="#" class="navbar-brand" style="font-style: italic;">AMS</a>
 				</div>
-				<ul class="nav navbar-nav">
+				<ul class="nav navbar-nav">w
 					<li><a href="home.html">Home</a></li>
 					<li><a href="timetable.html">Time Table</a></li>
 					<li><a href="markAttendance.html">Mark Attendance</a></li>
@@ -374,18 +395,17 @@
 				<table class="table table-stripped table-hover" id="real_time_studentList">
 					<thead>
 					<tr>
+						<th>Roll No.</th>
+						<th>Name</th>
 						<th>Registration No.</th>
-					   <th>Name</th>
 					</tr>
 				</thead>
 				</table>
 				<button class="btn btn-info btn-block" onclick="final_punch();">Punch Attendance</button>
 			</div>
 		</div>
-
 </body>
 <script>
-
 	function load_details()
 	{
 		if(sessionStorage.getItem("faculty_name")==null)
@@ -396,8 +416,6 @@
 		{
 			document.getElementById("set_faculty_name").innerHTML = sessionStorage.getItem("faculty_name");	
 		}
-		
 	}
-
 </script>	
 </html>
